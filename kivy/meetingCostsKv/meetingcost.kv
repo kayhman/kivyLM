@@ -1,0 +1,73 @@
+#:kivy 1.0
+
+<Graph>:
+    size_hint: 1.0,1.0
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+<MenuScreen>:
+    BoxLayout:
+        Button:
+            text: 'Goto settings'
+            on_press: root.manager.current = 'settings'
+        Button:
+            text: 'Quit'
+
+
+
+<MeetingCost>:
+    costLabel: costLabel
+    elapsedLabel: elapsedLabel
+    slider: slider
+    participantsLabel: participantsLabel
+    graph: graph
+    startButton: startButton
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 5 
+        spacing: 5 
+        
+        
+        BoxLayout:
+            size_hint_y: 0.1 
+            orientation: 'horizontal'
+            Label:
+                id: costLabel
+                text: ''
+            Label:
+                id: elapsedLabel
+                text: ''
+            Label:
+                id: participantsLabel
+                text: ''
+        Graph:
+            id: graph
+
+        BoxLayout:
+            size_hint_y: 0.15 
+            orientation: 'horizontal'
+            
+            Button:
+                id: startButton
+                text: 'Start Meeting' 
+                on_press: root.startStopPressed()
+                size_hint_x: 0.1
+            
+            Button:
+                text: '-' 
+                on_press: slider.value = slider.value-1
+                size_hint_x: 0.01
+            Slider:
+                id: slider
+                min: 0
+                max: 25
+                size_hint_x: 0.1
+                
+            Button:
+                text: '+' 
+                on_press: slider.value = slider.value+1
+                size_hint_x: 0.01
