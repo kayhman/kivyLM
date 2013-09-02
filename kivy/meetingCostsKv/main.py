@@ -4,8 +4,6 @@ kivy.require('1.1.1')
 from kivy.lang import Builder
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
-from kivy.uix.layout import Layout
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.label import Label
 from kivy.app import App
@@ -16,9 +14,10 @@ from kivy.graphics import Color, Line, Rectangle
 from datetime import datetime, timedelta
 import time
 
-#Builder.load_file('meetingcost.kv')
-
 class MenuScreen(Screen):
+    pass
+
+class SettingsScreen(Screen):
     pass
 
 class Graph(Widget):
@@ -51,7 +50,6 @@ class Graph(Widget):
       self.canvas.clear()
       with self.canvas:
         Rectangle(pos=self.pos, size=self.size)
-      print "rescale !!!! "
 
 class MeetingCost(Screen):
     costLabel = ObjectProperty()
@@ -111,7 +109,6 @@ class MeetingCost(Screen):
      self.updateElapsed(dt)
 
 class MeetingCostApp(App):
-    #timeStop = None
     cost = None
     menu = None
     meetingWasStopped = None
@@ -121,9 +118,11 @@ class MeetingCostApp(App):
         self.sm = ScreenManager()
         self.cost = MeetingCost(name="cost")
         self.menu = MenuScreen(name="menu")
+        self.settings = SettingsScreen(name="settings")
 	self.cost.build()
         self.sm.add_widget(self.cost)
         self.sm.add_widget(self.menu)
+        self.sm.add_widget(self.settings)
 	self.sm.curent = "cost"
 	self.bind(on_start = self.post_build_init) 
         return self.sm
@@ -143,20 +142,19 @@ class MeetingCostApp(App):
           self.cost.startMeeting()
 
     def _key_handler(self, key, scanCode, codePoint, modifier, args):
-	self.cost.startButton.text =  'codePoint ' + str(codePoint)
         if codePoint == 4:
-	  self.sm.current = "menu"
+	  if self.sm.current != "menu":
+	    self.sm.current = "menu"
+	  else:
+	    App.get_running_app().stop()
 
     def post_build_init(self,ev): 
-        #import android 
-        #import pygame 
+        import android 
+        import pygame 
 
-        #android.map_key(android.KEYCODE_MENU, 1000) 
-        #android.map_key(android.KEYCODE_BACK, 1001) 
-        #android.map_key(android.KEYCODE_HOME, 1002) 
-        #android.map_key(android.KEYCODE_SEARCH, 1003) 
-        #win = self._app_window 
-        #win.bind(on_keyboard=self._key_handler) 
+        android.map_key(android.KEYCODE_BACK, 1001) 
+        win = self._app_window 
+        win.bind(on_keyboard=self._key_handler) 
         pass
-if __name__ == '__main__':
-    MeetingCostApp().run()
+
+MeetingCostApp().run()

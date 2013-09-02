@@ -11,12 +11,18 @@
 <MenuScreen>:
     BoxLayout:
         Button:
-            text: 'Goto settings'
+            text: 'Cost'
+            on_press: root.manager.current = 'cost'
+        Button:
+            text: 'Settings'
             on_press: root.manager.current = 'settings'
         Button:
             text: 'Quit'
+            on_press: app.stop() 
 
-
+<SettingsScreen>:
+    Label:
+        text: 'Settings : not yet implemented'
 
 <MeetingCost>:
     costLabel: costLabel
