@@ -29,7 +29,7 @@ class Graph(Widget):
     maxX = 5 * 60 #seconds
     points = []
 
-    def updateCost(self, dt):
+    def update_cost(self, dt):
       self.totalCost = self.totalCost + dt / 3600.0 * self.hourCost * self.nbParticipants
       self.secondsElapsed = self.secondsElapsed + dt 
       self.points.append( (self.secondsElapsed, self.totalCost) )
@@ -66,21 +66,21 @@ class MeetingCost(Screen):
       self.participantsLabel.text = "#Participants = %d"%0
       self.costLabel.text = "Meeting cost : %.2f"%0.
       self.elapsedLabel.text = "Elapsed time : %.2d:%.2d:%.2d"%(0,0,0) 
-      self.slider.bind(value=self.updateParticipants)
+      self.slider.bind(value=self.update_participants)
 
-    def startStopPressed(self)  :
+    def start_stop_pressed(self)  :
       if self.stopped: 
-        self.startMeeting()
+        self.start_meeting()
       else:
-        self.stopMeeting()
+        self.stop_meeting()
     
-    def startMeeting(self):
+    def start_meeting(self):
       if self.stopped:
         self.startButton.text = "Pause Meeting"
         Clock.schedule_interval(self.update, 1.0)
         self.stopped = False 
 
-    def stopMeeting(self):
+    def stop_meeting(self):
       if not self.stopped:
         self.startButton.text = "Start Meeting"
         Clock.unschedule(self.update)
@@ -89,14 +89,14 @@ class MeetingCost(Screen):
     def on_resize(self, width, height):
         self.canvas.clear()
 
-    def updateParticipants(self, instance, value):
+    def update_participants(self, instance, value):
       self.graph.nbParticipants = value
       self.participantsLabel.text = "#Participants = %d"%value
 
-    def updateCost(self, dt):
+    def update_cost(self, dt):
       self.costLabel.text = "Meeting cost : %.2f"%self.graph.totalCost
 
-    def updateElapsed(self, dt):
+    def update_elasped(self, dt):
       self.elapsedTime = self.elapsedTime + dt 
       hours = self.elapsedTime / 3600
       minutes = (self.elapsedTime / 60 ) % 60
@@ -104,9 +104,9 @@ class MeetingCost(Screen):
       self.elapsedLabel.text = "Elapsed time : %.2d:%.2d:%.2d"%(hours,minutes,secondes) 
 
     def update(self, dt):
-     self.graph.updateCost(dt)
-     self.updateCost(dt)
-     self.updateElapsed(dt)
+     self.graph.update_cost(dt)
+     self.update_cost(dt)
+     self.update_elasped(dt)
 
 class MeetingCostApp(App):
     cost = None
@@ -129,17 +129,17 @@ class MeetingCostApp(App):
 
     def on_pause(self):
         self.meetingWasStopped = self.cost.stopped
-        self.cost.stopMeeting()
+        self.cost.stop_meeting()
         return True
 
     def on_stop(self):
         self.meetingWasStopped = self.cost.stopped
-        self.cost.stopMeeting()
+        self.cost.stop_meeting()
         return True
 
     def on_resume(self):
 	if not self.meetingWasStopped:
-          self.cost.startMeeting()
+          self.cost.start_meeting()
 
     def _key_handler(self, key, scanCode, codePoint, modifier, args):
         if codePoint == 4:
@@ -155,6 +155,5 @@ class MeetingCostApp(App):
         android.map_key(android.KEYCODE_BACK, 1001) 
         win = self._app_window 
         win.bind(on_keyboard=self._key_handler) 
-        pass
 
 MeetingCostApp().run()
