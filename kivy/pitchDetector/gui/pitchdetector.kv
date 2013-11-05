@@ -2,7 +2,22 @@
 
 <PitchDetector>:
     pitchLabel: pitchLabel
+    size_hint: 1.0,1.0
 
-    Label:
-        id: pitchLabel
-        text: 'Pitch detected : F'
+    BoxLayout:
+        size_hint: 1.0,1.0
+        orientation: 'vertical'
+        Label:
+            size_hint: 1.0,1.0
+            id: pitchLabel
+            text: 'Pitch detected : ?'
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                size_hint: 1.0,1.0
+                on_press: root.startRecord()
+                text: "Start"
+            Button:
+                size_hint: 1.0,1.0
+                on_press: root.stopRecord()
+                text: "Stop"

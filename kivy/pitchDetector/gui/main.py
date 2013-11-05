@@ -6,11 +6,13 @@ from kivy.uix.widget import Widget
 from kivy.uix.label import Label
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.properties import ObjectProperty
 
 from jnius import autoclass
 
 import autocorrelation
 import random
+from time import time
 
 
 class PitchDetector(Widget):
@@ -25,13 +27,14 @@ class PitchDetector(Widget):
     mAudio = AudioRecord(AudioSource.MIC, 44100, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize)
      
     def build(self):
-      self.noteLabel.text = "No key pressed"
       self.mAudio.startRecording()
 
-    def startRecord(self, dummy):
+    def startRecord(self):
       Clock.schedule_interval(self.record, .500)
       
-    
+    def stopRecord(self):
+      Clock.unschedule(self.record)
+     
     def record(self, dt):
       startTime = time()	
     
@@ -45,9 +48,10 @@ class PitchDetector(Widget):
       strg = ""
       for d in data:
             strg += "%c"%d
-      self.noteVal, self.note = autocorrelation.autoCorrelation(strg, 3400, 1e6, 0.9)
+      self.noteVal, self.note = autocorrelation.autoCorrelation(strg, 3400, 0.9)
       last = (time() - startTime)
-      self.noteLabel.text = "%d Samples Recorded : %s in %f with E = %f"%(read, self.note, last, E)
+      if self.note != "Not found":
+          self.pitchLabel.text = "%d Samples Recorded : %s in %f"%(read, self.note, last)
 
 class PitchDetectorApp(App):
     def build(self):
@@ -55,4 +59,4 @@ class PitchDetectorApp(App):
         self.pitch.build()
         return self.pitch
 
-PianoMasterApp().run()
+PitchDetectorApp().run()
