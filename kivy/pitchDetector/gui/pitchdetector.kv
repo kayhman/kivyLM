@@ -2,22 +2,29 @@
 
 <PitchDetector>:
     pitchLabel: pitchLabel
-    size_hint: 1.0,1.0
+    pitchLabelPython: pitchLabelPython
+    #size_hint: 1.0,1.0
 
     BoxLayout:
-        size_hint: 1.0,1.0
+        padding: 5 
+        spacing: 5 
+        #size_hint: 1.0,1.0
         orientation: 'vertical'
         Label:
-            size_hint: 1.0,1.0
+            #size_hint: 1.0,1.0
             id: pitchLabel
-            text: 'Pitch detected : ?'
+            text: 'Pitch detected(C) : ?'
+        Label:
+            #size_hint: 1.0,1.0
+            id: pitchLabelPython
+            text: 'Pitch detected (Python) : ?'
         BoxLayout:
             orientation: 'horizontal'
             Button:
-                size_hint: 1.0,1.0
+                #size_hint: 1.0,1.0
                 on_press: root.startRecord()
                 text: "Start"
             Button:
-                size_hint: 1.0,1.0
+                #size_hint: 1.0,1.0
                 on_press: root.stopRecord()
                 text: "Stop"
