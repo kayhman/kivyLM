@@ -59,6 +59,7 @@ def slowPitchDetection(samples, size, Athres):
 class PitchDetector(FloatLayout):
     pitchLabel = ObjectProperty()
     pitchLabelPython = ObjectProperty()
+    toggleButton = ObjectProperty()
 
     AudioRecord = autoclass('android.media.AudioRecord')
     Buffer  = autoclass('java.nio.ByteBuffer')
@@ -80,7 +81,10 @@ class PitchDetector(FloatLayout):
 
     def togglePython(self):
       self.enablePythonCode = not self.enablePythonCode     
-
+      if self.enablePythonCode:
+	self.toggleButton.text = "Disable Python"
+      else:
+	self.toggleButton.text = "Enable Python"
     def record(self, dt):
       threshold = 0.8
       # create out recorder

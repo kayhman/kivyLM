@@ -3,6 +3,7 @@
 <PitchDetector>:
     pitchLabel: pitchLabel
     pitchLabelPython: pitchLabelPython
+    toggleButton: toggleButton
     BoxLayout:
         padding: 5 
         spacing: 5 
@@ -29,6 +30,7 @@
         BoxLayout:
             orientation: 'horizontal'
             Button:
+                id: toggleButton
                 #size_hint: 1.0,1.0
                 on_press: root.togglePython()
                 text: "Disable Python"
