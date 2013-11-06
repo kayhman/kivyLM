@@ -2,7 +2,7 @@ import kivy
 kivy.require('1.1.1')
 
 from kivy.lang import Builder
-from kivy.uix.widget import Widget
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.app import App
 from kivy.clock import Clock
@@ -25,10 +25,10 @@ keyName = ["Not found", "A0", "A0#", "B0",
            "C8"]
 
 def computeCorrelation(samples, size, offset):
-    dist = 0
+    dist = 0.0
     for idx in range(0, size):
-        s  = 255 * samples[2*idx] + samples[2*idx+1] 
-        st = 255 * samples[int(2*(idx+offset))%size] + samples[int(2*(idx+offset)+1)] 
+        s  = float(samples[2*idx] + 255 * samples[2*idx+1] )
+        st = float(samples[int(2*(idx))%size] + 255 * samples[int(2*(idx+offset)+1)%size]) 
         dist += s * st
     return dist
 
@@ -49,14 +49,14 @@ def slowPitchDetection(samples, size, Athres):
         freq = keyFreq(key)
         offset = round(44100.0 / freq)
         dist = computeCorrelation(samples, size, offset) / ct0
-        print "dist : ", dist, " -> ", ct0, " len: ", len(samples)
+#        print "dist : ", dist, " -> ", ct0, " len: ", len(samples)
         if dist > maxDist:
             maxDist = dist
             note = key
     return note, keyName[note]
 
 
-class PitchDetector(Widget):
+class PitchDetector(FloatLayout):
     pitchLabel = ObjectProperty()
     pitchLabelPython = ObjectProperty()
 
@@ -67,6 +67,7 @@ class PitchDetector(Widget):
     buff = Buffer.allocateDirect(3400*2)
     bufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
     mAudio = AudioRecord(AudioSource.MIC, 44100, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize)
+    enablePythonCode = True
      
     def build(self):
       self.mAudio.startRecording()
@@ -76,13 +77,15 @@ class PitchDetector(Widget):
       
     def stopRecord(self):
       Clock.unschedule(self.record)
-     
+
+    def togglePython(self):
+      self.enablePythonCode = not self.enablePythonCode     
+
     def record(self, dt):
+      threshold = 0.8
       # create out recorder
       read = self.mAudio.read(self.buff, 3400)
       data = self.buff.array()
-#      read += self.mAudio.read(self.buff, 3400)
-#      data += self.buff.array()
 
       startTime = time()      
       strg = ""
@@ -90,18 +93,20 @@ class PitchDetector(Widget):
             strg += "%c"%d
 
      # Call C code
-
-      self.noteVal, self.note = autocorrelation.autoCorrelation(strg, 3400, 0.9)
+      self.noteVal, self.note = autocorrelation.autoCorrelation(strg, 3400, threshold)
       last = (time() - startTime)
       if self.note != "Not found":
           self.pitchLabel.text = "%d Samples Recorded : %s in %f"%(read, self.note, last)
 
       # Call Python code
       startTime = time()
-      #self.noteVal, self.note = slowPitchDetection(data, 3400, 0.9)
+      self.noteVal, self.note = slowPitchDetection(data, 3400, threshold)
       last = (time() - startTime)
-      if self.note != "Not found":
-          self.pitchLabelPython.text = "%d Samples Recorded : %s in %f"%(read, self.note, last)
+      if self.enablePythonCode:
+          if self.note != "Not found":
+              self.pitchLabelPython.text = "%d Samples Recorded : %s in %f"%(read, self.note, last)
+      else:
+          self.pitchLabelPython.text = "Python code disabled"
 
 class PitchDetectorApp(App):
     def build(self):

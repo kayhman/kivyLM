@@ -3,8 +3,6 @@
 <PitchDetector>:
     pitchLabel: pitchLabel
     pitchLabelPython: pitchLabelPython
-    #size_hint: 1.0,1.0
-
     BoxLayout:
         padding: 5 
         spacing: 5 
@@ -28,3 +26,9 @@
                 #size_hint: 1.0,1.0
                 on_press: root.stopRecord()
                 text: "Stop"
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                #size_hint: 1.0,1.0
+                on_press: root.togglePython()
+                text: "Disable Python"
